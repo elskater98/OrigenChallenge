@@ -25,13 +25,17 @@ SECRET_KEY = '6*g7vbocruv-vf8^xsf)a#pi#-1-qwnrjk8-6iyga9u-u=%w#7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'josalhor.ddns.net'
+]
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'channels',
+    'rest_framework',
+    'rest_framework.authtoken',
     'chat',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -129,4 +133,13 @@ CHANNEL_LAYERS = {
             "hosts": [('127.0.0.1', 6379)],
         },
     },
+}
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ]
 }
