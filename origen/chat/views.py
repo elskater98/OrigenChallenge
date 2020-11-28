@@ -22,6 +22,15 @@ class EditSessionView(viewsets.ViewSet):
         """
         user = self.request.user
         return models.EditSession.objects.filter(user=user)
+    
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        session_id = serializer.data['session_id']
+        user = request.user
+        adder = models.EditSessionAllowed(session_id=session_id, user=user)
+        adder.save()
 
 class EditSessionAllowedView(viewsets.ViewSet):
     serializer_class = serializers.SessionAllowedSerializer
