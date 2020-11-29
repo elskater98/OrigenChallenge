@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from rest_framework import generics, viewsets
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import AllowAny
+from django.contrib.auth.models import User
 from . import serializers
 from . import models
 
@@ -12,8 +14,9 @@ def room(request, room_name):
         'room_name': room_name
     })
 
-class EditSessionView(viewsets.ViewSet):
+class EditSessionView(viewsets.ModelViewSet):
     serializer_class = serializers.SessionSerializer
+    permission_classes = (AllowAny, )
 
     def get_queryset(self):
         """
@@ -21,19 +24,23 @@ class EditSessionView(viewsets.ViewSet):
         for the currently authenticated user.
         """
         user = self.request.user
-        return models.EditSession.objects.filter(user=user)
+        owner = models.EditSession.objects.filter(user=user)
+        # added = models.EditSessionAllowed.objects.filter(user=user).values_list('__session', flat=True)
+        # print('\n'*50)
+        # print(added)
+        return owner
     
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        session_id = serializer.data['session_id']
+        name = serializer.data['name']
         user = request.user
-        adder = models.EditSessionAllowed(session_id=session_id, user=user)
-        adder.save()
+        return models.EditSession.objects.create(name=name, user=user)
 
-class EditSessionAllowedView(viewsets.ViewSet):
+class EditSessionAllowedView(viewsets.ModelViewSet):
     serializer_class = serializers.SessionAllowedSerializer
+    permission_classes = (AllowAny, )
 
     def get_queryset(self):
         """
@@ -55,3 +62,8 @@ class EditSessionAllowedView(viewsets.ViewSet):
             raise PermissionDenied({"message":"You don't have permission to access"})
         adder = models.EditSessionAllowed(session_id=session_id, user=requested_user)
         adder.save()
+
+class UserCreate(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = serializers.UserSerializer
+    permission_classes = (AllowAny, )

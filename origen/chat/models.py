@@ -5,7 +5,10 @@ from django.contrib.auth.models import User
 class EditSession(models.Model):
     session_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=30, default='Room')
+    date_created = models.DateTimeField(auto_now_add=True, blank=True)
 
 class EditSessionAllowed(models.Model):
-    session_id = models.ForeignKey(EditSession, on_delete=models.CASCADE)
+    id = models.IntegerField(primary_key=True)
+    session = models.ForeignKey(EditSession, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
