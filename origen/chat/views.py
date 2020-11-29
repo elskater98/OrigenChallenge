@@ -3,6 +3,7 @@ from rest_framework import generics, viewsets
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny
 from django.contrib.auth.models import User
+from rest_framework.response import Response
 from . import serializers
 from . import models
 
@@ -36,7 +37,8 @@ class EditSessionView(viewsets.ModelViewSet):
 
         name = serializer.data['name']
         user = request.user
-        return models.EditSession.objects.create(name=name, user=user)
+        models.EditSession.objects.create(name=name, user=user)
+        return Response({"status": "Success"})  
 
 class EditSessionAllowedView(viewsets.ModelViewSet):
     serializer_class = serializers.SessionAllowedSerializer
